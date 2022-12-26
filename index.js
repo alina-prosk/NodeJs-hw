@@ -3,10 +3,7 @@ const {
   listContacts,
   getContactById,
   removeContact,
-} = require("./contacts.js");
-
-// index.js
-// const argv = require("yargs").argv;
+} = require("./contacts");
 
 const { Command } = require("commander");
 const program = new Command();
@@ -21,54 +18,39 @@ program.parse(process.argv);
 
 const argv = program.opts();
 
-// TODO: рефакторить
 async function invokeAction({ action, id, name, email, phone }) {
-  try {
-    switch (action) {
-      case "list":
-        //   console.log("invoke list");
-        const contacts = await listContacts();
-        console.table(contacts);
-        break;
+  switch (action) {
+    case "list":
+      const contacts = await listContacts();
+      console.table(contacts);
+      break;
 
-      case "get":
-        const сontact = await getContactById(id);
-        if (сontact === undefined) {
-          console.log(`no contact by id ${id}`);
-          return;
-        }
-        console.log("Your contact is find");
-        console.table(contact);
-        break;
+    case "get":
+      const contactById = await getContactById(id);
+      if (!contactById) {
+        console.log(`no contact by id ${id}`);
+        return;
+      }
+      console.table(contactById);
+      break;
 
-      case "add":
-        const newContact = await addContact(name, email, phone);
-        console.log("Add new contact");
-        console.table(newContact);
-        //   console.table("invoke add", name, email, phone);
-        //   await addContact(name, email, phone);
-        break;
+    case "add":
+      const newContact = await addContact(name, email, phone);
+      console.table(newContact);
+      break;
 
-      case "remove":
-        //   console.log("invoke remove");
-        const remContact = await removeContact(id);
-        if (remContact === undefined) {
-          console.log(`no contact by id ${id}`);
-          return;
-        }
-        console.log(`Contact with id: ${id} was deleted`);
-        break;
+    case "remove":
+      const remContact = await removeContact(id);
+      if (!remContact) {
+        console.log(`no contact by id ${id}`);
+        return;
+      }
+      console.log(remContact);
+      break;
 
-      default:
-        console.warn("\x1B[31m Unknown action type!");
-    }
-  } catch (error) {
-    console.error(error.message);
+    default:
+      console.warn("\x1B[31m Unknown action type!");
   }
 }
 
 invokeAction(argv);
-// listContacts();
-// getContactById();
-// removeContact();
-// addContact();
